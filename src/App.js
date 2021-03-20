@@ -1,9 +1,44 @@
 import './App.css';
+import Destination from './Components/Destination/Destination';
+import Header from './Components/Header/Header';
+import Home from './Components/Home/Home';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+import NotFound from './Components/NotFound/NotFound';
+import SearchRide from './Components/SearchRide/SearchRide';
+import Login from './Components/Login/Login';
+
+
 
 function App() {
   return (
-    <div className="App">
-     
+    <div>
+      <Router>
+        <Header></Header>
+        <Login></Login>
+        <Switch>
+          <Route exact path="/home">
+            <Home />
+          </Route>
+          <Route path="/ride/:name">
+            <Destination></Destination>
+          </Route>
+          <Route path="/searchRide/:name">
+            <SearchRide></SearchRide>
+          </Route>
+          <Route path="/">
+            <Home></Home>
+          </Route>
+          <Route path="*">
+            <NotFound></NotFound>
+          </Route>
+        </Switch>
+      </Router>
+
     </div>
   );
 }

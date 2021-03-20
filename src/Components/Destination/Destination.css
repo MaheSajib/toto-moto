@@ -1,0 +1,13 @@
+.location-from{
+    display: flex;
+}
+.location-from div{
+    margin: 0 30px;
+}
+.search-form{
+    height: 250px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: lightgrey;
+    box-shadow: 10px 10px 8px lightgrey;
+}
