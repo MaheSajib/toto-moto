@@ -19,10 +19,13 @@ function App() {
     <div>
       <Router>
         <Header></Header>
-        <Login></Login>
+        
         <Switch>
           <Route exact path="/home">
             <Home />
+          </Route>
+          <Route exact path="/Login">
+            <Login></Login>
           </Route>
           <Route path="/ride/:name">
             <Destination></Destination>
@@ -30,7 +33,7 @@ function App() {
           <Route path="/searchRide/:name">
             <SearchRide></SearchRide>
           </Route>
-          <Route path="/">
+          <Route exact path="/">
             <Home></Home>
           </Route>
           <Route path="*">
