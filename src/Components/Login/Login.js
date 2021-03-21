@@ -29,20 +29,46 @@ const Login = () => {
     let { from } = location.state || { from: { pathname: "/" } };
 
     const [isNewUser, setIsNewUser] = useState(false);
-    const { register, handleSubmit, watch, errors } = useForm();
+    const { register, handleSubmit } = useForm();
+    
     const onSubmit = data => {
-        firebase.auth().signInWithEmailAndPassword(data.Email, data.Password)
-            .then((res) => {
-                const newUserInfo = res.user;
+        if(isNewUser && data.Email && data.Password){
+            console.log(isNewUser);
+            firebase.auth().createUserWithEmailAndPassword(data.Email, data.Password)
+            .then( userCredential => {
+                const newUserInfo = userCredential.user;
                 newUserInfo.error = '';
                 newUserInfo.success = true;
-                setUser(newUserInfo);
+                setIsNewUser(newUserInfo);
                 handleResponse(newUserInfo, true);
             })
-            .catch((error) => {
-                console.log(error);
+            .catch( error => {
+                const newUserInfo = {};
+                newUserInfo.error = error.message;
+                newUserInfo.success = false;
+                setIsNewUser(newUserInfo);
+
             });
-    };
+        }
+
+        if(!isNewUser && data.Email && data.Password){
+            firebase.auth().signInWithEmailAndPassword(data.Email, data.Password)
+            .then((userCredential) => {
+            
+                const user = userCredential.user;
+                user.error = '';
+                user.success = true;
+                setIsNewUser(user); 
+                handleResponse(user, true);
+            })
+            .catch((error) => {
+                const newUserInfo = {};
+                newUserInfo.error = error.message;
+                newUserInfo.success = false;
+                setIsNewUser(newUserInfo);
+            });
+        }
+    }
 
 
 
@@ -97,6 +123,8 @@ const Login = () => {
         }
     }
 
+    
+
     return (
         <div className="Login-form">
             {
@@ -105,15 +133,15 @@ const Login = () => {
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 {
-                    isNewUser && <input className="form-control" name="name" placeholder="Name" ref={register} />
+                    isNewUser && <input className="form-control" name="name" placeholder="Name" required ref={register} />
                 }
                 <br />
-                <input className="form-control" name="Email" placeholder="Email" ref={register} />
+                <input className="form-control" name="Email" placeholder="Email"  ref={register} required />
                 <br />
-                <input className="form-control" placeholder="Password" name="Password" type="password" ref={register({ required: true })} />
+                <input className="form-control" placeholder="Password" name="Password"  type="password" required ref={register({ required: true })} />
                 <br />
                 {
-                    isNewUser && <input className="form-control" placeholder="Confirm Password" type="password" name="Confirm Password" ref={register({ required: true })} />
+                    isNewUser && <input className="form-control" placeholder="Confirm Password" type="password" required name="Confirm Password" ref={register({ required: true })} />
                 }
                 <br />
                 <br />
