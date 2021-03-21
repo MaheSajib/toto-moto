@@ -11,3 +11,12 @@
     background-color: white;
     box-shadow: 10px 10px 8px lightgrey;
 }
+@media only screen and (max-width: 600px) {
+    .location-from{
+        flex-wrap: wrap;
+    }
+    .map {
+      height: 300px;
+      width: 300px;
+    }
+  }

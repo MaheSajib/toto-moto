@@ -3,70 +3,104 @@ import "firebase/auth";
 import firebaseConfig from './firebase.config';
 import { useForm } from "react-hook-form";
 import './Login.css';
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useHistory, useLocation } from "react-router-dom";
+import { useContext, useState } from "react";
+import { UserContext } from "../../App";
 
 
 if (firebase.apps.length === 0) {
     firebase.initializeApp(firebaseConfig);
 }
 
+
 const Login = () => {
 
-    const [isNewUser, setIsNewUser] = useState(false);
-    const { register, handleSubmit, watch, errors } = useForm();
-    const onSubmit = data => {
-        firebase.auth().signInWithEmailAndPassword(data.Email, data.Password)
-            .then((userCredential) => {
-                // Signed in
-                var user = userCredential.user;
-                setUser(user);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    };
     const [user, setUser] = useState({
         isSignedIn: false,
         name: '',
         email: '',
         password: '',
         photo: ''
-    })
+    });
+
+    const [loggedInUser, setLoggedInUser] = useContext(UserContext);
+    const history = useHistory();
+    const location = useLocation();
+    let { from } = location.state || { from: { pathname: "/" } };
+
+    const [isNewUser, setIsNewUser] = useState(false);
+    const { register, handleSubmit, watch, errors } = useForm();
+    const onSubmit = data => {
+        firebase.auth().signInWithEmailAndPassword(data.Email, data.Password)
+            .then((res) => {
+                const newUserInfo = res.user;
+                newUserInfo.error = '';
+                newUserInfo.success = true;
+                setUser(newUserInfo);
+                handleResponse(newUserInfo, true);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
 
 
     const handleGoogleSignIn = () => {
         var provider = new firebase.auth.GoogleAuthProvider();
         firebase.auth()
             .signInWithPopup(provider)
-            .then((result) => {
-                /** @type {firebase.auth.OAuthCredential} */
-                const final = result.user;
-                setUser(final);
+            .then((res) => {
+                const { displayName, photoURL, email } = res.user;
+                const signedInUser = {
+                    isSignedIn: true,
+                    name: displayName,
+                    email: email,
+                    photo: photoURL,
+                    success: true
+                };
+                console.log(signedInUser)
+                setUser(signedInUser);
+                handleResponse(signedInUser, true)
             }).catch((error) => {
                 console.log(error);
             });
     }
 
+
     const handleFbSignIn = () => {
         var provider = new firebase.auth.FacebookAuthProvider();
-        firebase
-            .auth()
+        firebase.auth()
             .signInWithPopup(provider)
-            .then((result) => {
-                /** @type {firebase.auth.OAuthCredential} */
-                var credential = result.credential;
-                setUser(result.user);
-                var accessToken = credential.accessToken;
+            .then((res) => {
+                const { displayName, photoURL, email } = res.user;
+                const signedInUser = {
+                    isSignedIn: true,
+                    name: displayName,
+                    email: email,
+                    photo: photoURL,
+                    success: true
+                };
+                setUser(signedInUser);
+                handleResponse(signedInUser, true)
             })
             .catch((error) => {
                 console.log(error);
             });
     }
+
+    const handleResponse = (res, redirect) => {
+        setUser(res);
+        setLoggedInUser(res);
+        if (redirect) {
+            history.replace(from);
+        }
+    }
+
     return (
         <div className="Login-form">
             {
-               isNewUser ? <h1>Create an account</h1> : <h1>LogIn</h1>
+                isNewUser ? <h1>Create an account</h1> : <h1>LogIn</h1>
             }
 
             <form onSubmit={handleSubmit(onSubmit)}>

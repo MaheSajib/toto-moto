@@ -2,3 +2,17 @@
     height: 30px;
     width: 30px;
 }
+.detailName{
+    color: white;
+    font-size: 30px;
+}
+@media only screen and (max-width: 600px) {
+    .search-result{
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .map {
+      height: 300px;
+      width: 400px;
+    }
+  }

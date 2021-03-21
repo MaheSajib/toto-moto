@@ -11,12 +11,16 @@ import {
 import NotFound from './Components/NotFound/NotFound';
 import SearchRide from './Components/SearchRide/SearchRide';
 import Login from './Components/Login/Login';
+import { createContext, useState } from 'react';
+import PrivateRoute from '../src/Components/PrivateRoute/PrivateRoute';
 
 
+export const UserContext = createContext();
 
 function App() {
+  const [loggedInUser, setLoggedInUser] = useState({});
   return (
-    <div>
+    <UserContext.Provider value = {[loggedInUser, setLoggedInUser]}>
       <Router>
         <Header></Header>
         
@@ -27,12 +31,12 @@ function App() {
           <Route exact path="/Login">
             <Login></Login>
           </Route>
-          <Route path="/ride/:name">
+          <PrivateRoute path="/ride/:name">
             <Destination></Destination>
-          </Route>
-          <Route path="/searchRide/:name">
+          </PrivateRoute>
+          <PrivateRoute path="/searchRide/:name/:pickFrom/:pickTo">
             <SearchRide></SearchRide>
-          </Route>
+          </PrivateRoute>
           <Route exact path="/">
             <Home></Home>
           </Route>
@@ -42,7 +46,7 @@ function App() {
         </Switch>
       </Router>
 
-    </div>
+    </UserContext.Provider>
   );
 }
 
